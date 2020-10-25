@@ -6,7 +6,6 @@ $consulta="SELECT idpersona, nombre, pais, edad FROM personas";
 $resultado=$conexion->prepare($consulta);
 $resultado->execute();
 $data=$resultado->fetchAll(PDO::FETCH_ASSOC);
-
 ?>
 
 
@@ -60,22 +59,20 @@ $data=$resultado->fetchAll(PDO::FETCH_ASSOC);
                             </tr>
                         </thead>
                         <tbody>
-                            <?php
-                            foreach ($data as $dat) {
-                                ?>
+                            <?php                            
+                            foreach($data as $dat) {                                                        
+                            ?>
                             <tr>
-                                <td><?php $dat['idnombre']; ?> </td>
-                                <td><?php $dat['nombre']; ?></td>
-                                <td><?php $dat['apis']; ?></td>
-                                <td><?php $dat['edad']; ?></td>
-                                <td>
-                                   
-                                </td>
+                                <td><?php echo $dat['idpersona'] ?></td>
+                                <td><?php echo $dat['nombre'] ?></td>
+                                <td><?php echo $dat['pais'] ?></td>
+                                <td><?php echo $dat['edad'] ?></td>    
+                                <td></td>
                             </tr>
                             <?php
-                            }
-                            ?>
-                        </tbody>
+                                }
+                            ?>                                
+                        </tbody>    
                     </table>
                 </div>
             </div>

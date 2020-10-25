@@ -36,11 +36,10 @@ $(document).ready(function() {
 
     var fila; //capturar la fila para editar o borrar el registro
 
-    // botno editar
-    $(Document).on("click", ".btnEditar", function() {
+    //botón EDITAR    
+    $(document).on("click", ".btnEditar", function() {
         fila = $(this).closest("tr");
         idpersona = parseInt(fila.find('td:eq(0)').text());
-        // alert(idpersona);
         nombre = fila.find('td:eq(1)').text();
         pais = fila.find('td:eq(2)').text();
         edad = parseInt(fila.find('td:eq(3)').text());
@@ -48,7 +47,6 @@ $(document).ready(function() {
         $("#nombre").val(nombre);
         $("#pais").val(pais);
         $("#edad").val(edad);
-
         opcion = 2; //editar
 
         $(".modal-header").css("background-color", "#007bff");
@@ -56,18 +54,14 @@ $(document).ready(function() {
         $(".modal-title").text("Editar Persona");
         $("#modalCRUD").modal("show");
 
-
     });
 
-
-    // botno borrar
-    $(Document).on("click", ".btnBorrar", function() {
-        fila = $(this).closest("tr");
-        idpersona = parseInt(fila.find('td:eq(0)').text());
-
-        opcion = 3; //borrar
-
-        var respupesta = confirm("esta seguro de elliminar el resgistro: " + idpersona + "?");
+    //botón BORRAR
+    $(document).on("click", ".btnBorrar", function() {
+        fila = $(this);
+        idpersona = parseInt($(this).closest("tr").find('td:eq(0)').text());
+        opcion = 3 //borrar
+        var respuesta = confirm("¿Está seguro de eliminar el registro: " + idpersona + "?");
         if (respuesta) {
             $.ajax({
                 url: "bd/crud.php",
@@ -75,7 +69,7 @@ $(document).ready(function() {
                 dataType: "json",
                 data: { opcion: opcion, idpersona: idpersona },
                 success: function() {
-                    tablaPersonas.row(fila.parenrs('tr')).remove().draw();
+                    tablaPersonas.row(fila.parents('tr')).remove().draw();
                 }
             });
         }
@@ -90,23 +84,18 @@ $(document).ready(function() {
             url: "bd/crud.php",
             type: "POST",
             dataType: "json",
-            data:
-
-            { nombre: nombre, pais: pais, edad: edad, idpersona: idpersona, opcion: opcion },
+            data: { nombre: nombre, pais: pais, edad: edad, idpersona: idpersona, opcion: opcion },
             success: function(data) {
                 console.log(data);
                 idpersona = data[0].idpersona;
                 nombre = data[0].nombre;
                 pais = data[0].pais;
                 edad = data[0].edad;
-                if (opcion == 1) {
-                    tablaPersonas.row.add([idpersona, nombre, pais, edad]).draw();
-                } else {
-                    tablaPersonas.row(fila).data([idpersona, nombre, pais, edad]).draw();
-                }
+                if (opcion == 1) { tablaPersonas.row.add([idpersona, nombre, pais, edad]).draw(); } else { tablaPersonas.row(fila).data([idpersona, nombre, pais, edad]).draw(); }
             }
         });
         $("#modalCRUD").modal("hide");
+
     });
 
 });
