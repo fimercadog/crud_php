@@ -1,11 +1,12 @@
 $(document).ready(function() {
-    tablaPersonas = $('#tablaPersonas').DataTable({
+    tablaPersonas = $("#tablaPersonas").DataTable({
         "columnDefs": [{
             "targets": -1,
             "data": null,
             "defaultContent": "<div class='text-center'><div class='btn-group'><button class='btn btn-primary btnEditar'>Editar</button><button class='btn btn-danger btnBorrar'>Borrar</button></div></div>"
         }],
-        //para cambiar el lenguaje a español
+
+        //Para cambiar el lenguaje a español
         "language": {
             "lengthMenu": "Mostrar _MENU_ registros",
             "zeroRecords": "No se encontraron resultados",
@@ -22,6 +23,7 @@ $(document).ready(function() {
             "sProcessing": "Procesando...",
         }
     });
+
     $("#btnNuevo").click(function() {
         $("#formPersonas").trigger("reset");
         $(".modal-header").css("background-color", "#28a745");
@@ -29,9 +31,54 @@ $(document).ready(function() {
         $(".modal-title").text("Nueva Persona");
         $("#modalCRUD").modal("show");
         idpersona = null;
+        opcion = 1; //alta
+    });
 
+    var fila; //capturar la fila para editar o borrar el registro
 
+    // botno editar
+    $(Document).on("click", ".btnEditar", function() {
+        fila = $(this).closest("tr");
+        idpersona = parseInt(fila.find('td:eq(0)').text());
+        // alert(idpersona);
+        nombre = fila.find('td:eq(1)').text();
+        pais = fila.find('td:eq(2)').text();
+        edad = parseInt(fila.find('td:eq(3)').text());
+
+        $("#nombre").val(nombre);
+        $("#pais").val(pais);
+        $("#edad").val(edad);
+
+        opcion = 2; //editar
+
+        $(".modal-header").css("background-color", "#007bff");
+        $(".modal-header").css("color", "white");
+        $(".modal-title").text("Editar Persona");
         $("#modalCRUD").modal("show");
+
+
+    });
+
+
+    // botno borrar
+    $(Document).on("click", ".btnBorrar", function() {
+        fila = $(this).closest("tr");
+        idpersona = parseInt(fila.find('td:eq(0)').text());
+
+        opcion = 3; //borrar
+
+        var respupesta = confirm("esta seguro de elliminar el resgistro: " + idpersona + "?");
+        if (respuesta) {
+            $.ajax({
+                url: "bd/crud.php",
+                type: "POST",
+                dataType: "json",
+                data: { opcion: opcion, idpersona: idpersona },
+                success: function() {
+                    tablaPersonas.row(fila.parenrs('tr')).remove().draw();
+                }
+            });
+        }
     });
 
     $("#formPersonas").submit(function(e) {
@@ -43,16 +90,23 @@ $(document).ready(function() {
             url: "bd/crud.php",
             type: "POST",
             dataType: "json",
-            data: { nombre: nombre, pais: pais, edad: edad, idpersona: idpersona },
+            data:
+
+            { nombre: nombre, pais: pais, edad: edad, idpersona: idpersona, opcion: opcion },
             success: function(data) {
-                console.log(data); //debug
+                console.log(data);
                 idpersona = data[0].idpersona;
                 nombre = data[0].nombre;
                 pais = data[0].pais;
                 edad = data[0].edad;
-                tablaPersonas.row.add([idpersona, nombre, pais, edad]).draw();
+                if (opcion == 1) {
+                    tablaPersonas.row.add([idpersona, nombre, pais, edad]).draw();
+                } else {
+                    tablaPersonas.row(fila).data([idpersona, nombre, pais, edad]).draw();
+                }
             }
         });
-        $("#modalCRUD").modal('hide');
+        $("#modalCRUD").modal("hide");
     });
+
 });
